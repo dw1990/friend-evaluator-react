@@ -1,0 +1,6 @@
+@import "tailwindcss";
+
+body {
+  background-color: #f8fafc; /* Slate-50: Ein sehr kühles, professionelles Hellgrau */
+  color: #0f172a; /* Slate-900: Fast Schwarz für Text */
+}
