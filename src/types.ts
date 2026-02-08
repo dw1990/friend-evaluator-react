@@ -1,4 +1,5 @@
-export type ImpactLevel = -7 | -3 | 3 | 7;
+import { IMPACT_WEIGHTS } from './constants';
+export type ImpactLevel = typeof IMPACT_WEIGHTS[keyof typeof IMPACT_WEIGHTS];
 
 export interface Trait {
   id: string;
@@ -7,7 +8,6 @@ export interface Trait {
   isNoGo: boolean;
 }
 
-// NEU: Gruppe
 export interface Group {
   id: string;
   name: string;

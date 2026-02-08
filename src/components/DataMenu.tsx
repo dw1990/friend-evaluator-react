@@ -4,24 +4,31 @@ import { Download, Upload, Trash2, Database, X } from 'lucide-react';
 import clsx from 'clsx';
 
 export function DataMenu() {
-  const { friends, traits, loadData, resetAll } = useStore();
+  const { friends, traits, groups, loadData, resetAll } = useStore();
+  
   const [isOpen, setIsOpen] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const menuRef = useRef<HTMLDivElement>(null);
 
-  // Klick außerhalb schließt das Menü (UX Best Practice)
   useEffect(() => {
     function handleClickOutside(event: MouseEvent) {
       if (menuRef.current && !menuRef.current.contains(event.target as Node)) {
         setIsOpen(false);
       }
-    }
+    } 
     document.addEventListener("mousedown", handleClickOutside);
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
   const handleExport = () => {
-    const data = { friends, traits, exportDate: new Date().toISOString(), version: 1 };
+    const data = { 
+      friends, 
+      traits, 
+      groups, 
+      exportDate: new Date().toISOString(), 
+      version: 1 
+    };
+
     const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
     const url = URL.createObjectURL(blob);
     const link = document.createElement('a');
@@ -44,7 +51,11 @@ export function DataMenu() {
         const json = JSON.parse(event.target?.result as string);
         if (Array.isArray(json.friends) && Array.isArray(json.traits)) {
           if (confirm('Achtung: Aktuelle Daten werden überschrieben.')) {
-            loadData({ friends: json.friends, traits: json.traits });
+            loadData({ 
+              friends: json.friends, 
+              traits: json.traits,
+              groups: json.groups || [] 
+            });
           }
         } else {
           alert('Ungültiges Format.');
@@ -63,7 +74,6 @@ export function DataMenu() {
 
   return (
     <div className="relative" ref={menuRef}>
-      {/* Der Trigger Button (im Header sichtbar) */}
       <button
         onClick={() => setIsOpen(!isOpen)}
         className={clsx(
@@ -77,7 +87,6 @@ export function DataMenu() {
         <span className="hidden sm:inline">Daten verwalten</span>
       </button>
 
-      {/* Das Dropdown (Absolute Position) */}
       {isOpen && (
         <div className="absolute right-0 top-full mt-2 w-64 bg-white rounded-xl shadow-xl border border-slate-100 p-2 z-50 animate-in fade-in zoom-in-95 duration-100">
           
