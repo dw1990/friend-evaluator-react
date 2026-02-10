@@ -82,7 +82,7 @@ export function MissingValuesCard({ friends, traits }: Props) {
                 {count === 0 ? (
                   <>
                     <AlertTriangle className="w-3.5 h-3.5 text-red-500 shrink-0 mt-0.5" />
-                    <span>Niemand in deinem Umfeld deckt diesen Wert ab.</span>
+                    <span>Weniger als 2 Personen in deinem Umfeld deckt diesen Wert ab.</span>
                   </>
                 ) : (
                   <>
