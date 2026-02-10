@@ -3,7 +3,8 @@ import {
   HeartHandshake, 
   Smile, 
   Meh, 
-  Frown 
+  Frown, 
+  AlertTriangle
 } from 'lucide-react';
 import type { Friend, Trait } from '../types';
 
@@ -18,10 +19,12 @@ export interface ScoreResult {
   isNoGo: boolean;
 }
 
-// NEU: Reine UI-Mapping Funktion (Public, damit wir sie auch in der Analyse nutzen können)
-export function getCategory(percentage: number, isNoGo: boolean): ScoreResult {
+// TOXIC THRESHOLD
+const TOXIC_THRESHOLD = -20; 
+
+export function getCategory(percentage: number, isNoGo: boolean, negativeScore: number = 0): ScoreResult {
   
-  // 1. NO-GO Fall
+  // 1. NO-GO Check
   if (isNoGo) {
     return {
       score: -999,
@@ -35,11 +38,22 @@ export function getCategory(percentage: number, isNoGo: boolean): ScoreResult {
     };
   }
 
-  // Clamp percentage für die UI Bars (0-100)
   const uiPercentage = Math.max(0, Math.min(100, percentage));
 
-  // 2. Super (> 80%)
-  if (percentage >= 80) {
+  // 2. TOXIC OVERRIDE
+  if (negativeScore <= TOXIC_THRESHOLD) {
+    return {
+      score: percentage, percentage: uiPercentage, 
+      label: 'Toxisch', color: 'text-amber-700', bg: 'bg-amber-100', barColor: 'bg-amber-500', 
+      icon: AlertTriangle, isNoGo: false
+    };
+  }
+
+  // 3. REALISTISCHE SKALA (Basiert auf -5 bis +5 Logik)
+
+  // SUPER: Ab 60% (Entspricht Ø Rating 3.0 von 5)
+  // Das ist sehr stark. Eine 3 ist "Wichtig".
+  if (percentage >= 60) {
     return {
       score: percentage,
       percentage: uiPercentage,
@@ -52,8 +66,9 @@ export function getCategory(percentage: number, isNoGo: boolean): ScoreResult {
     };
   }
 
-  // 3. Gut (> 60%)
-  if (percentage >= 60) {
+  // GUT: Ab 30% (Entspricht Ø Rating 1.5 von 5)
+  // Wer im Schnitt 1.5 hat, liegt stabil im Plus. Das ist ein guter Freund.
+  if (percentage >= 30) {
     return {
       score: percentage,
       percentage: uiPercentage,
@@ -66,8 +81,9 @@ export function getCategory(percentage: number, isNoGo: boolean): ScoreResult {
     };
   }
 
-  // 4. Neutral (> 25%)
-  if (percentage >= 25) {
+  // NEUTRAL: Ab 5% (Entspricht Ø Rating 0.25 von 5)
+  // Hauptsache nicht negativ.
+  if (percentage >= 5) {
     return {
       score: percentage,
       percentage: uiPercentage,
@@ -80,8 +96,8 @@ export function getCategory(percentage: number, isNoGo: boolean): ScoreResult {
     };
   }
 
-  // 5. Unscheinbar / Stein (> -15%)
-  if (percentage > -15) {
+  // UNSCHEINBAR: Bereich um die 0 (-5% bis 5%)
+  if (percentage > -5) {
     return {
       score: percentage,
       percentage: uiPercentage,
@@ -94,7 +110,7 @@ export function getCategory(percentage: number, isNoGo: boolean): ScoreResult {
     };
   }
 
-  // 6. Belastend (< -15%)
+  // BELASTEND (< -5%)
   return {
     score: percentage,
     percentage: uiPercentage,

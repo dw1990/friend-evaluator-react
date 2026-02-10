@@ -1,49 +1,47 @@
-// Die rohen Werte (für Logik & Vergleiche)
+// src/constants.ts
+
 export const IMPACT_WEIGHTS = {
-  DAMAGE_HEAVY: -7,
-  DAMAGE_LIGHT: -3,
-  BENEFIT_LIGHT: 3,
-  BENEFIT_HEAVY: 7,
+  BONUS: 1,            // "Nice to have"
+  IMPORTANT: 3,        // "Wichtig"
+  VERY_IMPORTANT: 5,   // "Sehr Wichtig" (Schwellenwert für Toxizität bei Fehltritt)
+  ESSENTIAL: 7,        // "Essentiell" (DNA)
 } as const;
 
-// Die UI-Konfiguration (für Selectors, Badges, Listen)
-// Wir nutzen ein Array, damit die Reihenfolge im UI (z.B. Buttons) garantiert ist.
 export const IMPACT_CONFIG = [
   { 
-    value: IMPACT_WEIGHTS.DAMAGE_HEAVY, 
-    label: 'Schadet mir', 
-    color: 'bg-red-600 hover:bg-red-700', 
-    textColor: 'text-red-700',
-    badgeClass: 'bg-red-50 text-red-800 border-red-100',
-    groupTitle: 'Schadet mir'
+    value: IMPACT_WEIGHTS.BONUS, 
+    label: 'Bonus', 
+    color: 'bg-sky-400 hover:bg-sky-500', 
+    textColor: 'text-sky-600',
+    badgeClass: 'bg-sky-50 text-sky-700 border-sky-100',
+    groupTitle: 'Nice to have (Bonus)'
   },
   { 
-    value: IMPACT_WEIGHTS.DAMAGE_LIGHT, 
-    label: 'Tut nicht gut', 
-    color: 'bg-orange-500 hover:bg-orange-600', 
-    textColor: 'text-orange-700',
-    badgeClass: 'bg-orange-50 text-orange-800 border-orange-100',
-    groupTitle: 'Tut nicht gut'
+    value: IMPACT_WEIGHTS.IMPORTANT, 
+    label: 'Wichtig', 
+    color: 'bg-indigo-500 hover:bg-indigo-600', 
+    textColor: 'text-indigo-700',
+    badgeClass: 'bg-indigo-50 text-indigo-800 border-indigo-100',
+    groupTitle: 'Wichtige Werte'
   },
   { 
-    value: IMPACT_WEIGHTS.BENEFIT_LIGHT, 
-    label: 'Tut mir gut', 
-    color: 'bg-emerald-500 hover:bg-emerald-600', 
-    textColor: 'text-emerald-700',
-    badgeClass: 'bg-emerald-50 text-emerald-800 border-emerald-100',
-    groupTitle: 'Tut mir gut'
+    value: IMPACT_WEIGHTS.VERY_IMPORTANT, 
+    label: 'Sehr Wichtig', 
+    color: 'bg-violet-600 hover:bg-violet-700', 
+    textColor: 'text-violet-700',
+    badgeClass: 'bg-violet-50 text-violet-800 border-violet-100',
+    groupTitle: 'Sehr wichtige Werte'
   },
   { 
-    value: IMPACT_WEIGHTS.BENEFIT_HEAVY, 
-    label: 'Hilft mir sehr', 
-    color: 'bg-green-600 hover:bg-green-700', 
-    textColor: 'text-green-700',
-    badgeClass: 'bg-green-50 text-green-800 border-green-100',
-    groupTitle: 'Hilft mir sehr'
+    value: IMPACT_WEIGHTS.ESSENTIAL, 
+    label: 'Essentiell', 
+    color: 'bg-fuchsia-600 hover:bg-fuchsia-700', 
+    textColor: 'text-fuchsia-700',
+    badgeClass: 'bg-fuchsia-50 text-fuchsia-800 border-fuchsia-100',
+    groupTitle: 'Essentielle Werte (DNA)'
   },
 ] as const;
 
-// Helper um schnell an Config für einen Wert zu kommen (Lookup)
 export function getImpactConfig(weight: number) {
   return IMPACT_CONFIG.find(c => c.value === weight);
 }

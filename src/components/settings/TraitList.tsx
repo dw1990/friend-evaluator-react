@@ -1,6 +1,6 @@
 import { Trash2 } from 'lucide-react';
 import type { Trait } from '../../types';
-import { IMPACT_CONFIG, getImpactConfig } from '../../constants'; // <--- Import
+import { IMPACT_CONFIG, getImpactConfig } from '../../constants';
 import clsx from 'clsx';
 import { motion, AnimatePresence } from 'framer-motion';
 
@@ -10,10 +10,9 @@ interface Props {
 }
 
 export function TraitList({ traits, onRemove }: Props) {
-
+  
   const renderTraitBadge = (trait: Trait) => {
-    // Style dynamisch ermitteln
-    let styleClass = "bg-slate-100 text-slate-800"; // Fallback
+    let styleClass = "bg-slate-100 text-slate-800";
     
     if (trait.isNoGo) {
       styleClass = "bg-red-50 text-red-700 border-red-200 ring-1 ring-red-200";
@@ -66,10 +65,10 @@ export function TraitList({ traits, onRemove }: Props) {
 
   return (
     <div className="space-y-2">
-      {/* 1. No-Gos immer extra (Sonderfall) */}
+      {/* 1. No-Gos */}
       {renderGroup("No-Gos", traits.filter(t => t.isNoGo), "text-red-700")}
 
-      {/* 2. Dynamische Gruppen basierend auf Config (Reihenfolge kehren wir um: Positiv zuerst) */}
+      {/* 2. Dynamische Gruppen (Wir drehen die Config um: Essentiell zuerst) */}
       {[...IMPACT_CONFIG].reverse().map(config => (
         <div key={config.value}>
           {renderGroup(
