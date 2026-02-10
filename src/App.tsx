@@ -15,13 +15,18 @@ function App() {
       {/* --- HEADER --- */}
       <header className="max-w-[1600px] mx-auto mb-8 flex flex-col md:flex-row md:items-end justify-between gap-6">
         
-        {/* LOGO & BRANDING (Prisma) */}
-        <div className="flex items-center gap-3">
-          <div className="w-12 h-12 bg-indigo-600 rounded-2xl flex items-center justify-center shadow-lg shadow-indigo-200">
-            <span className="text-2xl">💎</span>
-          </div>
+        {/* LOGO & BRANDING */}
+        <div className="flex items-center gap-4">
+          {/* NEU: Das Bild-Logo statt Emoji */}
+          {/* Stelle sicher, dass 'prisma-logo.png' im 'public' Ordner liegt */}
+          <img 
+            src="/prisma.svg" 
+            alt="Prisma Logo" 
+            className="w-16 h-16 object-contain rounded-xl"
+          />
+          
           <div>
-            <h1 className="text-3xl font-black tracking-tight text-slate-900 leading-none mb-1">
+            <h1 className="text-4xl font-black tracking-tight text-slate-900 leading-none mb-1">
               Prisma
             </h1>
             <p className="text-xs font-bold text-slate-400 uppercase tracking-wide">
@@ -70,12 +75,12 @@ function App() {
         {activeTab === 'matrix' ? (
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 h-full">
             
-            {/* Linke Seite: Einstellungen / Traits (Jetzt ZUERST) */}
+            {/* LINKES PANEL: Einstellungen / Traits (Steuerpult) */}
             <div className="lg:col-span-4 h-full overflow-hidden flex flex-col order-1">
               <SettingsPanel />
             </div>
 
-            {/* Rechte Seite: Die Matrix (Jetzt ZWEITER) */}
+            {/* RECHTES PANEL: Die Matrix (Ergebnis) */}
             <div className="lg:col-span-8 h-full overflow-hidden flex flex-col order-2">
               <FriendMatrix />
             </div>
