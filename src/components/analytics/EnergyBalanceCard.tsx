@@ -3,6 +3,7 @@ import { Battery } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { evaluateFriend } from '../../util/scoring';
 import type { Friend, Trait } from '../../types';
+import { InfoTooltip } from '../InfoTooltip';
 
 interface Props {
   friends: Friend[];
@@ -26,6 +27,7 @@ export function EnergyBalanceCard({ friends, traits }: Props) {
     <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3 }} className="bg-white p-6 rounded-xl border border-slate-200 shadow-sm h-full">
       <h3 className="text-sm font-bold uppercase tracking-wider text-slate-400 mb-6 flex items-center gap-2">
         <Battery className="w-4 h-4 text-green-600" /> Energie-Bilanz
+        <InfoTooltip text="Verhältnis von Kraftgebern (Super/Gut) zu Zehrern (Belastend/Toxisch) im gesamten Netzwerk." />
       </h3>
       <div className="flex items-center gap-2 h-8 rounded-full overflow-hidden bg-slate-100 mb-4">
         {energyStats.chargers > 0 && <div className="h-full bg-emerald-500 flex items-center justify-center text-white text-xs font-bold" style={{ width: `${(energyStats.chargers / energyStats.total) * 100}%` }}>{energyStats.chargers}</div>}

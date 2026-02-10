@@ -4,6 +4,7 @@ import clsx from 'clsx';
 import { motion } from 'framer-motion';
 import { evaluateFriend, getCategory } from '../../util/scoring';
 import type { Friend, Group, Trait } from '../../types';
+import { InfoTooltip } from '../InfoTooltip';
 
 interface Props {
   friends: Friend[];
@@ -40,7 +41,10 @@ export function GroupRanking({ friends, groups, traits }: Props) {
 
   return (
     <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.5 }}>
-      <h3 className="text-xl font-bold text-slate-800 mb-4 flex items-center gap-2"><Users className="w-5 h-5 text-indigo-600" /> Gruppen-Ranking</h3>
+      <h3 className="text-xl font-bold text-slate-800 mb-4 flex items-center gap-2">
+        <Users className="w-5 h-5 text-indigo-600" /> Gruppen-Ranking
+        <InfoTooltip text="Durchschnittliche Qualität der Beziehungen innerhalb deiner definierten Gruppen." />
+      </h3>
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
         {ranking.map((item, index) => {
           const config = getCategory(item.avgScore, item.hasNoGo);

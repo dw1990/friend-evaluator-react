@@ -3,6 +3,7 @@ import { Zap } from 'lucide-react';
 import { motion } from 'framer-motion';
 import clsx from 'clsx';
 import type { Friend, Trait } from '../../types';
+import { InfoTooltip } from '../InfoTooltip';
 
 interface Props {
   friends: Friend[];
@@ -27,6 +28,7 @@ export function DominantTraitsCard({ friends, traits }: Props) {
     <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.4 }} className="bg-white p-6 rounded-xl border border-slate-200 shadow-sm h-full">
       <h3 className="text-sm font-bold uppercase tracking-wider text-slate-400 mb-4 flex items-center gap-2">
         <Zap className="w-4 h-4 text-yellow-500" /> Dominante Werte
+        <InfoTooltip text="Die stärksten positiven Eigenschaften, die dein aktuelles Netzwerk dir bietet (Summe aller positiven Bewertungen)." />
       </h3>
       <div className="flex flex-wrap gap-2">
         {dominantTraits.map((t, i) => (

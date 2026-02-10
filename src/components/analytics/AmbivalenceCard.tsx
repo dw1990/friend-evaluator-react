@@ -2,6 +2,7 @@ import { useMemo } from 'react';
 import { Activity, Fingerprint } from 'lucide-react';
 import { motion } from 'framer-motion';
 import type { Friend, Trait } from '../../types';
+import { InfoTooltip } from '../InfoTooltip';
 
 interface Props {
   friends: Friend[];
@@ -33,6 +34,7 @@ export function AmbivalenceCard({ friends, traits }: Props) {
     <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }} className="bg-white p-6 rounded-xl border border-slate-200 shadow-sm flex flex-col h-full">
       <h3 className="text-sm font-bold uppercase tracking-wider text-slate-400 mb-4 flex items-center gap-2">
         <Activity className="w-4 h-4 text-purple-500" /> Ambivalenz-Radar
+        <InfoTooltip text="Zeigt Personen, die gleichzeitig sehr positive UND sehr negative Eigenschaften haben (hoher innerer Konflikt)." />
       </h3>
       {ambivalentFriends.length > 0 ? (
         <div className="space-y-3 flex-1">

@@ -69,15 +69,17 @@ function App() {
         
         {activeTab === 'matrix' ? (
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 h-full">
-            {/* Linke Seite: Die Matrix */}
-            <div className="lg:col-span-8 h-full overflow-hidden flex flex-col">
+            
+            {/* Linke Seite: Einstellungen / Traits (Jetzt ZUERST) */}
+            <div className="lg:col-span-4 h-full overflow-hidden flex flex-col order-1">
+              <SettingsPanel />
+            </div>
+
+            {/* Rechte Seite: Die Matrix (Jetzt ZWEITER) */}
+            <div className="lg:col-span-8 h-full overflow-hidden flex flex-col order-2">
               <FriendMatrix />
             </div>
             
-            {/* Rechte Seite: Einstellungen / Traits */}
-            <div className="lg:col-span-4 h-full overflow-hidden flex flex-col">
-              <SettingsPanel />
-            </div>
           </div>
         ) : (
           /* Analyse View (Full Width) */

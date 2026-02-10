@@ -3,6 +3,7 @@ import { Search, AlertCircle, AlertTriangle } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { IMPACT_WEIGHTS } from '../../constants';
 import type { Friend, Trait } from '../../types';
+import { InfoTooltip } from '../InfoTooltip';
 
 interface Props {
   friends: Friend[];
@@ -53,6 +54,7 @@ export function MissingValuesCard({ friends, traits }: Props) {
     >
       <h3 className="text-sm font-bold uppercase tracking-wider text-slate-400 mb-4 flex items-center gap-2">
         <Search className="w-4 h-4" /> Versorgungs-Lücken
+        <InfoTooltip text="Zeigt wichtige Werte, die von weniger als 2 Personen in deinem Netzwerk abgedeckt werden." />
       </h3>
 
       {missingValues.length > 0 ? (

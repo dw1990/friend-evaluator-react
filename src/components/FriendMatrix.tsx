@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useStore } from '../store';
-import { Trash2, ArrowRight, ArrowUp, Gem } from 'lucide-react'; // Icons importieren
+import { Trash2, ArrowLeft, ArrowUp, Gem } from 'lucide-react'; // ArrowLeft statt ArrowRight
 import { motion, AnimatePresence } from 'framer-motion';
 import clsx from 'clsx';
 import { evaluateFriend } from '../util/scoring';
@@ -22,7 +22,7 @@ export function FriendMatrix() {
   // --- ONBOARDING LOGIK ---
   
   // Fall 1: Nutzer hat noch gar keine Werte definiert.
-  // Die Matrix macht noch keinen Sinn. Wir müssen ihn nach rechts schicken.
+  // Die Matrix macht noch keinen Sinn. Wir müssen ihn nach LINKS schicken.
   if (traits.length === 0) {
     return (
       <div className="h-full flex flex-col gap-4">
@@ -43,9 +43,10 @@ export function FriendMatrix() {
             <strong> durch welche Facetten</strong> (Werte) du sie betrachtest.
           </p>
           
+          {/* Pfeil zeigt jetzt nach LINKS */}
           <div className="flex items-center gap-4 text-indigo-600 font-bold bg-indigo-50 px-6 py-3 rounded-full animate-pulse">
-            <span>Beginne rechts im Menü</span>
-            <ArrowRight className="w-5 h-5" />
+            <ArrowLeft className="w-5 h-5" />
+            <span>Beginne links im Menü</span>
           </div>
         </div>
       </div>
@@ -88,8 +89,6 @@ export function FriendMatrix() {
 
       <div className="flex-1 overflow-auto border border-slate-200 rounded-lg shadow-sm bg-white relative">
         <table className="w-full text-left border-collapse">
-          {/* ... HIER DEIN BESTEHENDER TABLE CODE (Header & Body) ... */}
-          {/* (Kopiere den Inhalt aus deiner vorherigen Version hier rein) */}
           {/* Header... */}
            <thead className="bg-slate-50 sticky top-0 z-10 shadow-sm">
               <tr>
@@ -151,7 +150,6 @@ export function FriendMatrix() {
                         </div>
                       </td>
                       <td className="p-4 text-center h-[60px] relative">
-                         {/* Status Badge Code ... */}
                          <div className={clsx("inline-flex items-center gap-2 px-3 py-1 rounded-full border border-black/5 mx-auto shadow-sm", result.bg, result.color)}>
                             <StatusIcon className="w-4 h-4" />
                             <span className="text-xs font-bold">{result.label}</span>
