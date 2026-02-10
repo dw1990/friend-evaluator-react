@@ -7,7 +7,7 @@ import {
 import clsx from 'clsx';
 import { motion } from 'framer-motion';
 import { evaluateFriend, getCategory } from '../util/scoring';
-import { IMPACT_WEIGHTS } from '../constants'; // Import für Thresholds
+import { IMPACT_WEIGHTS } from '../constants';
 
 export function AnalyticsView() {
   const { friends, traits, groups } = useStore();
@@ -22,25 +22,31 @@ export function AnalyticsView() {
   // 1. MISSING VALUES (Lücken-Analyse)
   // Wir schauen auf Essentielle (7) und Sehr Wichtige (5) Werte
   const missingValues = useMemo(() => {
+    // Nur wichtige Traits betrachten
     const importantTraits = traits.filter(t => t.weight >= IMPACT_WEIGHTS.VERY_IMPORTANT && !t.isNoGo);
     if (importantTraits.length === 0 || filteredFriends.length === 0) return [];
 
     const stats = importantTraits.map(trait => {
       const totalScore = filteredFriends.reduce((sum, f) => {
-        // Wir nehmen hier nur positive Werte, da negative ja "Gegenteil" bedeuten
-        // und wir wissen wollen "wo fehlt das Gute?"
+        // Wir nutzen den echten Wert (-5 bis +5)
         const val = (f.ratings[trait.id] as number) || 0;
-        return sum + Math.max(0, val);
+        return sum + val;
       }, 0);
+      
       const avg = totalScore / filteredFriends.length;
       return { trait, avg };
     });
 
-    return stats.sort((a, b) => a.avg - b.avg).slice(0, 3);
+    // FILTER-LOGIK: Wir zeigen nur Traits, deren Durchschnitt < 1.0 ist.
+    // Alles ab 1.0 ist im positiven Bereich und somit kein "Vermisster Wert".
+    return stats
+      .filter(s => s.avg < 1.0) 
+      .sort((a, b) => a.avg - b.avg)
+      .slice(0, 3);
   }, [filteredFriends, traits]);
 
-  // 2. TOXIK-RADAR (Systemische Probleme)
-  // NEUE LOGIK: Wir suchen Traits, die am meisten negativen Impact erzeugen
+  // 2. SYSTEMISCHE PROBLEME (Ehemals Toxik-Radar)
+  // Wir suchen Traits, die am meisten negativen Impact erzeugen
   const topIssues = useMemo(() => {
     if (traits.length === 0 || filteredFriends.length === 0) return [];
 
@@ -67,8 +73,9 @@ export function AnalyticsView() {
 
     // Nur Traits anzeigen, die wirklich Schmerz verursachen
     return stats.filter(s => s.intensity > 0).sort((a, b) => b.intensity - a.intensity).slice(0, 3);
-  }, [filteredFriends, traits]);  
-  
+  }, [filteredFriends, traits]);
+
+  // 3. AMBIVALENZ
   const ambivalentFriends = useMemo(() => {
     if (filteredFriends.length === 0) return [];
 
@@ -94,11 +101,13 @@ export function AnalyticsView() {
 
       return { friend: f, conflictScore, posScore, negScore };
     })
+    // Schwellenwert auf 30 erhöht (wegen Skala bis +/- 35)
     .filter(res => res.conflictScore > 30) 
     .sort((a, b) => b.conflictScore - a.conflictScore)
     .slice(0, 3);
   }, [filteredFriends, traits]);
 
+  // 4. ENERGIE
   const energyStats = useMemo(() => {
     let chargers = 0;
     let drainers = 0;
@@ -114,6 +123,7 @@ export function AnalyticsView() {
     return { chargers, drainers, neutrals, total };
   }, [filteredFriends, traits]);
 
+  // 5. DOMINANTE WERTE
   const dominantTraits = useMemo(() => {
     // Hier schauen wir auf Traits, die am meisten positive Punkte bringen
     const positiveTraits = traits.filter(t => !t.isNoGo); 
@@ -131,7 +141,7 @@ export function AnalyticsView() {
     return stats.sort((a, b) => b.totalIntensity - a.totalIntensity).slice(0, 3);
   }, [filteredFriends, traits]);
 
-  // ... GroupRanking bleibt gleich (nutzt evaluateFriend) ...
+  // 6. GRUPPEN RANKING
   const groupRanking = useMemo(() => {
     if (selectedGroupId !== 'ALL' || groups.length === 0) return null;
     const ranking = groups.map(group => {
@@ -159,7 +169,7 @@ export function AnalyticsView() {
 
   return (
     <div className="h-full flex flex-col bg-slate-50/50">
-      {/* FILTER HEADER (Unverändert) */}
+      {/* FILTER HEADER */}
       <div className="bg-white border-b border-slate-200 p-4 flex gap-2 overflow-x-auto no-scrollbar">
         <button onClick={() => setSelectedGroupId('ALL')} className={clsx("px-4 py-2 rounded-full text-sm font-bold whitespace-nowrap transition", selectedGroupId === 'ALL' ? "bg-slate-800 text-white" : "bg-slate-100 text-slate-600 hover:bg-slate-200")}>Alle ({friends.length})</button>
         {groups.map(g => (
@@ -183,15 +193,17 @@ export function AnalyticsView() {
                     <div key={trait.id}>
                       <div className="flex justify-between text-sm font-medium mb-1">
                         <span className="text-slate-700">{trait.name}</span>
-                        <span className={clsx("font-bold", avg < 2 ? "text-red-500" : "text-orange-500")}>Ø {avg.toFixed(1)}</span>
+                        {/* Färbung: Rot wenn negativ, Orange wenn 0 bis 1 */}
+                        <span className={clsx("font-bold", avg < 0 ? "text-red-500" : "text-orange-500")}>Ø {avg.toFixed(1)}</span>
                       </div>
                       <div className="h-1.5 w-full bg-slate-100 rounded-full overflow-hidden">
-                        <div className="h-full bg-slate-300 rounded-full" style={{ width: `${Math.max(0, (avg / 5) * 100)}%` }} />
+                        {/* Balkenbreite: Zeigt nur positive Anteile an. Wenn negativ, ist Balken 0 (nur Text ist rot) */}
+                        <div className={clsx("h-full rounded-full", avg < 0 ? "bg-red-400" : "bg-orange-400")} style={{ width: `${Math.max(0, (avg / 5) * 100)}%` }} />
                       </div>
                     </div>
                   ))}
                 </div>
-              ) : <p className="text-slate-400 text-sm italic flex-1 flex items-center">Wichtige Werte sind gut vertreten.</p>}
+              ) : <p className="text-slate-400 text-sm italic flex-1 flex items-center">Deine wichtigen Werte sind gut erfüllt.</p>}
             </motion.div>
 
             {/* AMBIVALENZ */}
@@ -216,7 +228,7 @@ export function AnalyticsView() {
               ) : <div className="flex-1 flex flex-col items-center justify-center text-slate-400"><Fingerprint className="w-8 h-8 mb-2 opacity-20" /><p className="text-sm italic">Keine "Jekyll & Hyde" Beziehungen.</p></div>}
             </motion.div>
 
-            {/* TOXIK RADAR (Neu: Systemische Probleme) */}
+            {/* SYSTEMISCHE PROBLEME */}
             <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }} className="bg-white p-6 rounded-xl border border-slate-200 shadow-sm flex flex-col">
               <h3 className="text-sm font-bold uppercase tracking-wider text-slate-400 mb-4 flex items-center gap-2"><AlertTriangle className="w-4 h-4 text-orange-500" /> Systemische Probleme</h3>
               {topIssues.length > 0 ? (
@@ -228,21 +240,18 @@ export function AnalyticsView() {
                       </div>
                       <div>
                         <div className="font-bold text-slate-800 text-sm">{trait.name}</div>
-                        
-                        {/* HIER ÄNDERN: Statt "Betrifft" schreiben wir "Negativ bei" */}
                         <div className="text-[10px] text-slate-500">
                           Negativ bei <strong className="text-slate-700">{count}</strong> Personen
                         </div>
-                        
                       </div>
                     </div>
                   ))}
-                                  </div>
+                </div>
               ) : <div className="flex-1 flex flex-col items-center justify-center text-slate-400"><Trophy className="w-8 h-8 mb-2 opacity-20" /><p className="text-sm italic">Keine systemischen Probleme.</p></div>}
             </motion.div>
           </div>
 
-          {/* ROW 2 & 3 (Energy / Values / Groups) - Unverändert zur Vorversion, nur Props-Passing entfällt im UI */}
+          {/* ROW 2 & 3 (Energy / Values / Groups) */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3 }} className="bg-white p-6 rounded-xl border border-slate-200 shadow-sm">
               <h3 className="text-sm font-bold uppercase tracking-wider text-slate-400 mb-6 flex items-center gap-2"><Battery className="w-4 h-4 text-green-600" /> Energie-Bilanz</h3>
